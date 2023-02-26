@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 beforeAll(async () => {
   await mongoose.connection.close();
-  const url = 'mongodb://localhost:27017/test';
+  const url = 'mongodb://0.0.0.0:27017/test';
   mongoose.set('strictQuery', true);
   await mongoose.connect(url, { useNewUrlParser: true });
 });
