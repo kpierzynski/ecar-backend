@@ -1,0 +1,44 @@
+name: Test Backend
+
+on:
+  push:
+    branches: ['master']
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    environment:
+      name: test
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: mongo:4.4
+        env:
+          MONGO_INITDB_DATABASE: backend_db
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout 🛒
+        uses: actions/checkout@v3
+
+      - name: Set up Node 🟩
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+          cache: 'npm'
+
+      - name: Install dependencies 🔽
+        run: npm install
+
+      - name: Test ❓
+        run: npm run test
