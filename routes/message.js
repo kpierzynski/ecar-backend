@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(to)) {
-    return res(400).status({
+    return res.status(400).send({
       success: false,
       message: `Provided email is invalid: ${to}.`,
     });

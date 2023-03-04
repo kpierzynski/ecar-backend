@@ -5,7 +5,7 @@ const app = express();
 
 app.use(
   express.json({
-    limit: '1kb',
+    limit: '5kb',
   })
 );
 app.use('/api', routes);

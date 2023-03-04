@@ -1,9 +1,9 @@
+require('dotenv').config();
+
 const mongoose = require('mongoose');
 const app = require('./app');
 
 const cron = require('./tasks');
-
-require('dotenv').config();
 
 mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://0.0.0.0:27017/backend_db', {

@@ -16,7 +16,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.2",
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.1"
   },
   "devDependencies": {
     "@jest/types": "^29.4.3",
