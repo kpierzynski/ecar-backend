@@ -4,8 +4,24 @@ const router = express.Router();
 const Message = require('./../models/Message');
 
 router.post('/', (req, res) => {
+  console.log(req.body);
   const { body } = req;
   const { to, title, content, whenSend } = body;
+
+  if (!to || !title || !content || !whenSend)
+    return res.status(400).send({
+      status: false,
+      message: 'Missing to, title, content or whenSend key!',
+    });
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(to)) {
+    return res(400).status({
+      success: false,
+      message: `Provided email is invalid: ${to}.`,
+    });
+  }
 
   const message = new Message({
     to,
