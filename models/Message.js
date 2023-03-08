@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
-const { StringDecoder } = require('string_decoder');
 
 const messageSchema = new mongoose.Schema({
+  created: {
+    type: Number,
+    required: true,
+  },
+  registration: {
+    type: String,
+    required: true,
+  },
   to: {
     type: String,
     required: true,
@@ -21,10 +28,6 @@ const messageSchema = new mongoose.Schema({
   whenSend: {
     type: Number,
     required: true,
-  },
-  template: {
-    type: Number,
-    required: false,
   },
   isSent: {
     type: Boolean,

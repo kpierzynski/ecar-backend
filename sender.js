@@ -20,4 +20,10 @@ async function sendMessage({ to, title, content }) {
   console.log(info);
 }
 
+process.on('SIGUSR2', () => {
+  console.log('Closing transport object...');
+  transporter.close();
+  process.exit();
+});
+
 module.exports = sendMessage;

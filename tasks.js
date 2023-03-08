@@ -14,15 +14,15 @@ cron.schedule('* * * * *', async () => {
       whenSend: { $lt: now },
     });
 
-    messages.forEach((message) => {
+    messages.forEach(async (message) => {
       console.log(message);
       const { to, title, content } = message;
-      sendMessage({ to, title, content });
       try {
+        await sendMessage({ to, title, content });
         message.isSent = true;
         message.save();
       } catch (e) {
-        console.log('Cannot update message!');
+        console.log('Cannot update message or send an email!');
       }
     });
   } catch (e) {

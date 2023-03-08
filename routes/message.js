@@ -6,12 +6,12 @@ const Message = require('./../models/Message');
 router.post('/', (req, res) => {
   console.log(req.body);
   const { body } = req;
-  const { to, title, content, whenSend } = body;
+  const { to, title, content, whenSend, registration } = body;
 
-  if (!to || !title || !content || !whenSend)
+  if (!to || !title || !content || !whenSend || !registration)
     return res.status(400).send({
       status: false,
-      message: 'Missing to, title, content or whenSend key!',
+      error: 'Missing to, title, content or whenSend key!',
     });
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
   if (!emailRegex.test(to)) {
     return res.status(400).send({
       success: false,
-      message: `Provided email is invalid: ${to}.`,
+      error: `Provided email is invalid: ${to}.`,
     });
   }
 
@@ -28,6 +28,8 @@ router.post('/', (req, res) => {
     title,
     content,
     whenSend,
+    registration,
+    created: Date.now(),
   });
 
   try {
@@ -35,7 +37,7 @@ router.post('/', (req, res) => {
   } catch (e) {
     return res.status(500).send({
       success: false,
-      message: `Cannot add new Message to the database! Mongoose: ${e}`,
+      error: `Cannot add new Message to the database! Mongoose: ${e}`,
     });
   }
 
@@ -44,12 +46,12 @@ router.post('/', (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const messages = await Message.find({ isSent: false });
+    const messages = await Message.find();
     res.status(200).send({ success: true, messages });
   } catch (e) {
     return res.status(500).send({
       success: false,
-      message: 'Cannot retrive messages from server.',
+      error: 'Cannot retrive messages from server.',
     });
   }
 });
@@ -57,6 +59,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const messageId = req.params.id;
 
+  // is this necessary? empty id wont be passed to this route
   if (!messageId)
     return res
       .status(400)
@@ -68,7 +71,21 @@ router.get('/:id', async (req, res) => {
   } catch (e) {
     return res.status(404).send({
       success: false,
-      message: `Cannot retrive message with ${messageId}.`,
+      error: `Cannot retrive message with ${messageId}.`,
+    });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  const messageId = req.params.id;
+
+  try {
+    const message = await Message.deleteOne({ _id: messageId });
+    return res.status(200).send({ success: true });
+  } catch (e) {
+    return res.status(404).send({
+      success: false,
+      error: `Cannot delete provided element: ${messageId}`,
     });
   }
 });
