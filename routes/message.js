@@ -3,6 +3,8 @@ const router = express.Router();
 
 const Message = require('./../models/Message');
 
+const { mailTask } = require('./../tasks');
+
 router.post('/', (req, res) => {
   console.log(req.body);
   const { body } = req;
@@ -61,13 +63,30 @@ router.get('/:id', async (req, res) => {
 
   // is this necessary? empty id wont be passed to this route
   if (!messageId)
-    return res
-      .status(400)
-      .send({ success: false, message: `Invalid messageId! ${messageId}` });
+    return res.status(400).send({ success: false, message: `Invalid messageId! ${messageId}` });
 
   try {
     const message = await Message.findOne({ _id: messageId }).exec();
     return res.status(200).send({ success: true, message });
+  } catch (e) {
+    return res.status(404).send({
+      success: false,
+      error: `Cannot retrive message with ${messageId}.`,
+    });
+  }
+});
+
+router.post('/:id/send', async (req, res) => {
+  const messageId = req.params.id;
+
+  try {
+    const message = await Message.findOne({ _id: messageId }).exec();
+    message.isSent = false;
+    message.whenSend = Date.now();
+    await message.save();
+    mailTask.start();
+
+    return res.status(200).send({ success: true });
   } catch (e) {
     return res.status(404).send({
       success: false,

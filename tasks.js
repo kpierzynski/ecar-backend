@@ -5,7 +5,10 @@ const Message = require('./models/Message');
 
 console.log('Tasks file initialized tasks.');
 
-cron.schedule('* * * * *', async () => {
+const per20min = '0 0/20 0 * * * *';
+const per1min = '* * * * *';
+
+const mailTask = cron.schedule(per1min, async () => {
   const now = Date.now();
 
   try {
@@ -20,16 +23,14 @@ cron.schedule('* * * * *', async () => {
       try {
         await sendMessage({ to, title, content });
         message.isSent = true;
-        message.save();
+        await message.save();
       } catch (e) {
         console.log('Cannot update message or send an email!');
       }
     });
   } catch (e) {
-    console.log(
-      'Tragic failure happend. Cannot retrive messages from database!'
-    );
+    console.log('Tragic failure happend. Cannot retrive messages from database!');
   }
 });
 
-module.exports = cron;
+module.exports = { cron, mailTask };

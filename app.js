@@ -3,6 +3,9 @@ const routes = require('./routes');
 const cors = require('cors');
 
 const app = express();
+app.use(function (req, res, next) {
+  setTimeout(next, 500);
+});
 
 app.use(
   cors({
