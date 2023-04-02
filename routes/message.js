@@ -58,6 +58,19 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/stats', async (req, res) => {
+  const pendingCount = await Message.countDocuments({ isSent: false });
+  const allCount = await Message.countDocuments({});
+
+  res.status(200).send({
+    success: true,
+    stats: {
+      pending: pendingCount,
+      all: allCount,
+    },
+  });
+});
+
 router.get('/:id', async (req, res) => {
   const messageId = req.params.id;
 
