@@ -30,8 +30,20 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   isSent: {
-    type: Boolean,
-    default: false,
+    type: Number,
+    default: 1,
+  },
+  cyclic: {
+    type: Number,
+    required: true,
+  },
+  originalDate: {
+    type: Number,
+    required: true,
+  },
+  originalCounter: {
+    type: Number,
+    required: true,
   },
 });
 

@@ -13,16 +13,17 @@ const mailTask = cron.schedule(per1min, async () => {
 
   try {
     const messages = await Message.find({
-      isSent: false,
+      isSent: { $gt: 0 },
       whenSend: { $lt: now },
     });
 
     messages.forEach(async (message) => {
       console.log(message);
-      const { to, title, content } = message;
+      const { to, title, content, cyclic } = message;
       try {
         await sendMessage({ to, title, content });
-        message.isSent = true;
+        message.isSent -= 1;
+        message.whenSend += cyclic;
         await message.save();
       } catch (e) {
         console.log('Cannot update message or send an email!');

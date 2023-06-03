@@ -8,7 +8,7 @@ const { mailTask } = require('./../tasks');
 router.post('/', (req, res) => {
   console.log(req.body);
   const { body } = req;
-  const { to, title, content, whenSend, registration } = body;
+  const { to, title, content, whenSend, registration, isSent, cyclic } = body;
 
   if (!to || !title || !content || !whenSend || !registration)
     return res.status(400).send({
@@ -31,6 +31,10 @@ router.post('/', (req, res) => {
     content,
     whenSend,
     registration,
+    isSent,
+    cyclic,
+    originalDate: whenSend,
+    originalCounter: isSent,
     created: Date.now(),
   });
 
@@ -59,7 +63,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/stats', async (req, res) => {
-  const pendingCount = await Message.countDocuments({ isSent: false });
+  const pendingCount = await Message.countDocuments({ isSent: { $gt: 0 } });
   const allCount = await Message.countDocuments({});
 
   res.status(200).send({
@@ -94,7 +98,6 @@ router.post('/:id/send', async (req, res) => {
 
   try {
     const message = await Message.findOne({ _id: messageId }).exec();
-    message.isSent = false;
     message.whenSend = Date.now();
     await message.save();
     mailTask.start();
