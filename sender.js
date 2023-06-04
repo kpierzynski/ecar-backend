@@ -13,7 +13,7 @@ async function sendMessage({ to, title, content }) {
     from: process.env.EMAIL,
     to: to,
     subject: title,
-    text: content,
+    html: `${content}`,
   };
 
   let info = await transporter.sendMail(mailDetails);

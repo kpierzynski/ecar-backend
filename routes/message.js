@@ -99,6 +99,7 @@ router.post('/:id/send', async (req, res) => {
   try {
     const message = await Message.findOne({ _id: messageId }).exec();
     message.whenSend = Date.now();
+    message.isSent += 1;
     await message.save();
     mailTask.start();
 
